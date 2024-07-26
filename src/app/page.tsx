@@ -2,7 +2,7 @@ import Navbar from "@/components/Navbar";
 import SearchBar from "@/components/SearchBar";
 import Image from "next/image";
 import RecentlyPlayed from "@/components/Home/RecentlyPlayed";
-import MusicPlayer from "@/components/MusicPlayer";
+import MusicPlayer, {CustomMusicPlayer} from "@/components/MusicPlayer";
 
 export default function Home() {
   return (
@@ -15,7 +15,7 @@ export default function Home() {
         <RecentlyPlayed/>
       </div>
       <div className="sticky bottom-5">
-        <MusicPlayer/>
+        <CustomMusicPlayer/>
       </div>
     </main>
   );

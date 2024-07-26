@@ -1,7 +1,11 @@
+'use client';
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { Progress } from "@/components/ui/progress";
-
+import AudioPlayer, {RHAP_UI } from 'react-h5-audio-player';
+import 'react-h5-audio-player/lib/styles.css';
+import { useEffect, useState } from "react";
+import { invoke } from '@tauri-apps/api/tauri';
 
 export default function MusicPlayer() {
     return (
@@ -50,6 +54,51 @@ export default function MusicPlayer() {
       </div>
       </div>
     )
+}
+
+export const CustomMusicPlayer = () =>  {
+  const [tracks, setTracks] = useState<String[]>([])
+  const [currentTrack, setCurrentTrack] = useState<null | String>(null)
+
+  useEffect(() => {
+    async function fetchMusicFiles() {
+      try {
+        const musicFiles = await invoke('get_audio_files', { directory: 'E:/Musics/Others' });
+        console.log(musicFiles);
+        const musicFilesUrls = musicFiles.map(file => `http://localhost:3001/${encodeURIComponent(file)}`);
+        setTracks(musicFilesUrls);
+        if (musicFilesUrls.length > 0) setCurrentTrack(musicFilesUrls[0]);
+      } catch (error) {
+        console.error('Error fetching music files:', error);
+      }
+    }
+
+    fetchMusicFiles();
+  }, [])
+
+  const handleClickPrevious = () => {
+    const currentIndex = tracks.indexOf(currentTrack);
+    const prevIndex = (currentIndex - 1 + tracks.length) % tracks.length;
+    setCurrentTrack(tracks[prevIndex]);
+  }
+
+  const handleClickNext = () => {
+    const currentIndex = tracks.indexOf(currentTrack);
+    const nextIndex = (currentIndex + 1) % tracks.length;
+    setCurrentTrack(tracks[nextIndex]);
+  };
+
+  return (
+    <div className="fixed bottom-0 left-0 right-0 bg-background flex items-center justify-between px-6 py-6">
+      <AudioPlayer 
+      src={`${currentTrack}`}
+      onClickNext={handleClickNext}
+      onClickPrevious={handleClickPrevious}
+      showSkipControls={true}
+      showJumpControls={false}
+      />
+    </div>
+  )
 }
 
 function MaximizeIcon(props: any) {
