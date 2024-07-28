@@ -3,7 +3,7 @@
 
 pub mod audio;
 
-use audio::{get_audio_devices, get_audio_files};
+use audio::{get_audio_devices, get_audio_files, save_music_path, get_music_path};
 use tiny_http::{Server, Response};
 use std::sync::mpsc::channel;
 use std::thread;
@@ -41,7 +41,7 @@ fn main() {
 
 
     tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![get_audio_files])
+        .invoke_handler(tauri::generate_handler![get_audio_files, save_music_path, get_music_path])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

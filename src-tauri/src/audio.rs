@@ -1,9 +1,19 @@
 use cpal::traits::{DeviceTrait, HostTrait};
 use tauri::command;
 use std::fs;
+use std::fs::File;
+use std::io::{Read, Write};
 use std::path::PathBuf;
+use serde::{Deserialize, Serialize};
+use serde::de::Unexpected::Str;
+use serde_json::Value::String as SerdeString;
+use std::string::String;
 
-const BASE_DIRECTORY: &str = "E:/Musics/Others";
+
+#[derive(Serialize, Deserialize)]
+pub struct FolderPath {
+    path: String,
+}
 
 pub fn get_audio_devices() -> Vec<String> {
     const ARRAY_REPEAT_VALUE: String = String::new();
@@ -17,12 +27,13 @@ pub fn get_audio_devices() -> Vec<String> {
 }
 
 #[command]
-pub fn get_audio_files(directory: String) -> Vec<String> {
+pub fn get_audio_files() -> Result<Vec<String>, String> {
+    let mut directory = get_music_path().unwrap().path;
     let mut paths = Vec::new();
     let dir_path = PathBuf::from(&directory);
 
     if dir_path.is_dir() {
-        for entry in std::fs::read_dir(dir_path).expect("Directory not found") {
+        for entry in std::fs::read_dir(dir_path).map_err(|_| "Directory not found".to_string()).unwrap() {
             if let Ok(entry) = entry {
                 let path = entry.path();
                 if path.is_file() {
@@ -34,6 +45,23 @@ pub fn get_audio_files(directory: String) -> Vec<String> {
         }
     }
 
-    return paths;
+    return Ok(paths);
 
+}
+
+#[command]
+pub fn save_music_path(folder_path: FolderPath) -> Result<(), String> {
+    let json_data = serde_json::to_string(&folder_path).map_err(|e| e.to_string()).unwrap();
+    let mut file = File::create("config.json").map_err(|e| e.to_string()).unwrap();
+    file.write_all(json_data.as_bytes()).map_err(|e| e.to_string()).unwrap();
+    Ok(())
+}
+
+#[command]
+pub fn get_music_path() -> Result<FolderPath, String> {
+    let mut file = File::open("config.json").map_err(|_| "Config file doesn't exist".to_string()).unwrap();
+    let mut contents = String::new();
+    file.read_to_string(&mut contents).map_err(|e| e.to_string()).unwrap();
+    let folder_path: FolderPath = serde_json::from_str(&contents).map_err(|e| e.to_string()).unwrap();
+    return Ok(folder_path);
 }

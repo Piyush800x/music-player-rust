@@ -57,13 +57,13 @@ export default function MusicPlayer() {
 }
 
 export const CustomMusicPlayer = () =>  {
-  const [tracks, setTracks] = useState<String[]>([])
+  const [tracks, setTracks] = useState<any>([])
   const [currentTrack, setCurrentTrack] = useState<null | String>(null)
 
   useEffect(() => {
     async function fetchMusicFiles() {
       try {
-        const musicFiles = await invoke('get_audio_files', { directory: 'E:/Musics/Others' });
+        const musicFiles: String[] = await invoke('get_audio_files');
         console.log(musicFiles);
         const musicFilesUrls = musicFiles.map(file => `http://localhost:3001/${encodeURIComponent(file)}`);
         setTracks(musicFilesUrls);
