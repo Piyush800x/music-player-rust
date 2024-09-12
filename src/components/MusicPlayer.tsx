@@ -7,54 +7,6 @@ import 'react-h5-audio-player/lib/styles.css';
 import { useEffect, useState } from "react";
 import { invoke } from '@tauri-apps/api/tauri';
 
-export default function MusicPlayer() {
-    return (
-      <div className="fixed bottom-20 left-0 right-0 bg-background border-t flex items-center justify-between px-6 pt-4 pb-4">
-        <div className="flex w-full items-center gap-4">
-            <div className="flex w-full items-center gap-2">
-                <span className="text-sm text-muted-foreground">0:30</span>
-                <Progress value={50} className="flex-1 h-1" />
-                <span className="text-sm text-muted-foreground">3:45</span>
-            </div>
-        </div>
-      <div className="fixed bottom-0 left-0 right-0 bg-background flex items-center justify-between px-6 py-6">
-          <div className="flex items-center gap-4">
-            <img src="/placeholder.svg" alt="Song cover" width={50} height={50} className="rounded-md" />
-              <div>
-                  <h3 className="text-base font-medium line-clamp-1">Melodic Sunrise</h3>
-                  <p className="text-sm text-muted-foreground line-clamp-1">Jared Palmer</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-4">
-              <Button size="icon" variant="ghost">
-                  <ShuffleIcon className="h-5 w-5" />
-              </Button>
-              <Button size="icon" variant="ghost">
-                  <SkipBackIcon className="h-5 w-5" />
-              </Button>
-              <Button size="icon" variant="ghost">
-                  <PlayIcon className="h-5 w-5" />
-              </Button>
-              <Button size="icon" variant="ghost">
-                  <SkipForwardIcon className="h-5 w-5" />
-              </Button>
-              <Button size="icon" variant="ghost">
-                  <RepeatIcon className="h-5 w-5" />
-              </Button>
-            </div>
-            <div className="flex items-center gap-2">
-              <Volume2Icon className="h-5 w-5" />
-              <Slider
-                  defaultValue={[50]}
-                  max={100}
-                  step={1}
-                  className="w-24 [&>span:first-child]:h-1 [&>span:first-child]:bg-muted-foreground [&_[role=slider]]:bg-primary [&_[role=slider]]:w-3 [&_[role=slider]]:h-3 [&_[role=slider]]:border-0 [&>span:first-child_span]:bg-primary [&_[role=slider]:focus-visible]:ring-0 [&_[role=slider]:focus-visible]:ring-offset-0 [&_[role=slider]:focus-visible]:scale-105 [&_[role=slider]:focus-visible]:transition-transform"
-              />
-          </div>
-      </div>
-      </div>
-    )
-}
 
 export const CustomMusicPlayer = () =>  {
   const [tracks, setTracks] = useState<any>([])
@@ -63,10 +15,11 @@ export const CustomMusicPlayer = () =>  {
   useEffect(() => {
     async function fetchMusicFiles() {
       try {
-        const musicFiles: String[] = await invoke('get_audio_files');
+        const musicFiles: any[] = await invoke('get_audio_files');
         console.log(musicFiles);
         const musicFilesUrls = musicFiles.map(file => `http://localhost:3001/${encodeURIComponent(file)}`);
         setTracks(musicFilesUrls);
+        console.log(musicFilesUrls);
         if (musicFilesUrls.length > 0) setCurrentTrack(musicFilesUrls[0]);
       } catch (error) {
         console.error('Error fetching music files:', error);
@@ -91,23 +44,22 @@ export const CustomMusicPlayer = () =>  {
   return (
     <div className="fixed bottom-0 left-0 right-0 bg-background flex items-center justify-between px-6 py-6">
       <AudioPlayer 
-      src={`${currentTrack}`}
-      onClickNext={handleClickNext}
-      onClickPrevious={handleClickPrevious}
-      showSkipControls={true}
-      showJumpControls={false}
-      header={"Here goes song name"}
-      customIcons={{
-        play: <PlayIcon/>,
-        pause: <PauseIcon/>,
-        next: <SkipForwardIcon/>,
-        previous: <SkipBackIcon/>,
-        loop: <RepeatIcon/>,
-        // loopOff: ,
-        volume: <Volume2Icon/>,
-        volumeMute: <VolumeOff/>,
-
-      }}
+        src={`${currentTrack}`}
+        onClickNext={handleClickNext}
+        onClickPrevious={handleClickPrevious}
+        showSkipControls={true}
+        showJumpControls={false}
+        header={"Here goes song name"}
+        customIcons={{
+          play: <PlayIcon/>,
+          pause: <PauseIcon/>,
+          next: <SkipForwardIcon/>,
+          previous: <SkipBackIcon/>,
+          loop: <RepeatIcon/>,
+          // loopOff: ,
+          volume: <Volume2Icon/>,
+          volumeMute: <VolumeOff/>,
+        }}
       />
     </div>
   )

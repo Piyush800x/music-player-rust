@@ -2,7 +2,7 @@ import Navbar from "@/components/Navbar";
 import SearchBar from "@/components/SearchBar";
 import Image from "next/image";
 import RecentlyPlayed from "@/components/Home/RecentlyPlayed";
-import MusicPlayer, {CustomMusicPlayer} from "@/components/MusicPlayer";
+import {CustomMusicPlayer} from "@/components/MusicPlayer";
 import MainSettings from "@/components/Settings/MainSettings";
 
 export default function Home() {
